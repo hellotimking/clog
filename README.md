@@ -71,7 +71,7 @@ sudo mv clog /usr/local/bin/
 
 ## ⌨ Command Line Interface
 
-| Switch | Long Flag | Description |
+| Flag | Long Flag | Description |
 | :---- | :---- | :---- |
 | \-l | \--lines | Number of previous lines to show from the log file. |
 | \-h | \--host | Only show logs for a specific domain or IP address. |
