@@ -11,7 +11,6 @@
 ---
 - [Features](#-features)
 - [Installation](#-installation)
-- [Quick Start](#-quick-start)
 - [Command Line Interface](#-command-line-interface)
 - [Advanced Usage](#-advanced-usage)
 - [Performance](#-performance)
