@@ -1,16 +1,14 @@
-# CLOG v0.6.3 - High-Visibility Caddy Logs 🪵
+# CLOG - High-Visibility Caddy Logs 🪵
 ## Stop squinting at JSON. Start monitoring at the speed of Go.
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://github.com/hellotimking/clog)
 [![License](https://img.shields.io/github/license/hellotimking/clog)](LICENSE)
 
-**clog** is a specialized log processor and visualizer built in Go. It solves user JSON-squinting by transforming Caddy's structured logs into an interactive, human-centric dashboard. Designed for systems administrators and developers who need instant situational awareness without the overhead of heavy logging stacks.
+**CLOG** is a specialized log processor and visualizer built in Go. It solves user JSON-squinting by transforming Caddy's structured logs into an interactive, human-centric dashboard. Designed for systems administrators and developers who need instant situational awareness without the overhead of heavy logging stacks.
 
-Transforming messy, hard-to-read JSON streams into a clean, actionable visual interface.
+**Transforming messy, hard-to-read JSON streams into a clean, actionable visual interface.**
 
 ---
-
-## 📋 Table of Contents
 - [Features](#-features)
 - [Installation](#-installation)
 - [Quick Start](#-quick-start)
@@ -18,7 +16,6 @@ Transforming messy, hard-to-read JSON streams into a clean, actionable visual in
 - [Advanced Usage](#-advanced-usage)
 - [Performance](#-performance)
 - [License](#-license)
-
 ---
 
 ## ✨ Features
@@ -34,10 +31,10 @@ Transforming messy, hard-to-read JSON streams into a clean, actionable visual in
 ## 🚀 Installation
 
 ### From Source
-Requires Go 1.21 or higher.
+**Requires Go 1.21 or higher.**
 
+#### Clone the repository
 ```bash
-# Clone the repository
 git clone https://github.com/hellotimking/clog.git
 cd clog
 ```
@@ -87,15 +84,20 @@ sudo mv clog /usr/local/bin/
 
 ### Command Line Switches
 
-| Switch | Long Flag | Description | 
- | ----- | ----- | ----- | 
-| `-d` | `--dashboard` | Enables the TUI Dashboard mode (Status distribution & metrics). | 
-| `-s` | `--strip` | Strips the module prefix (e.g., `http.log.access`) from the output. | 
-| `-f` | `--filter` | Filter logs by a specific field or value (e.g., `-f "status:500"`). | 
-| `-m` | `--max` | Limit the number of lines displayed in the dashboard view. | 
-| `-c` | `--color` | Toggle color output (default: on). | 
-| `-v` | `--version` | Displays the current version of clog. | 
-| `-h` | `--help` | Shows the help menu and usage instructions. | 
+## **⚙️ Command Line Interface**
+
+| Switch | Long Flag | Description |
+| :---- | :---- | :---- |
+| \-l | \--lines | Number of previous lines to show from the log file. |
+| \-h | \--host | Only show logs for a specific domain or IP address. |
+| \-f | \--find | Only show lines containing a specific string. |
+| \-e | \--errors | Only show requests with status code \>= 400\. |
+| \-ha | \--hide-assets | Hides common asset types (.js, .css, images, etc). |
+| \-a | \--all | Show entire history and ignore asset filters. |
+| \-s | \--status | Show system resource bar at the bottom of the terminal. |
+| \-d | \--dashboard | Enable 1-second dashboard mode for real-time metrics. |
+| \-c | \--clear-screen | Clear terminal before starting and on exit. |
+| \- | \--help | Show the help menu and usage instructions. |
 
 ### Examples
 
