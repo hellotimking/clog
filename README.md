@@ -17,9 +17,10 @@ cd clog
 ```
 go build -ldflags="-s -w" -o clog
 ```
-Move to your path (optional)
-
+#### Move to your path (optional)
+```
 sudo mv clog /usr/local/bin/
+```
 
 ## 🛠 Usage
 
