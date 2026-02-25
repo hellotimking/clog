@@ -75,7 +75,7 @@ sudo mv clog /usr/local/bin/
 ```
 ---
 
-## 🚀 Command Line Interface
+## ⌨ Command Line Interface
 
 | Switch | Long Flag | Description |
 | :---- | :---- | :---- |
