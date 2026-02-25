@@ -10,7 +10,7 @@
 [![GitHub Downloads](https://img.shields.io/github/downloads/hellotimking/clog/total)](https://github.com/hellotimking/clog/releases)
 
 
-**CLOG** is a specialized log processor and visualizer built in Go. It solves user JSON-squinting by transforming Caddy's structured logs into an interactive, human-centric dashboard. Designed for systems administrators and developers who need instant situational awareness without the overhead of heavy logging stacks.
+**CLOG** is a specialised log processor and visualiser built in Go. It solves user JSON-squinting by transforming Caddy's structured logs into an interactive, human-centric dashboard. Designed for systems administrators and developers who need instant situational awareness without the overhead of heavy logging stacks.
 
 **Transforming messy, hard-to-read JSON streams into a clean, actionable visual interface.**
 
