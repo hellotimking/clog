@@ -13,10 +13,10 @@ git clone https://github.com/hellotimking/clog.git
 cd clog
 ```
 
-Build the binary
-
+#### Build the binary
+```
 go build -ldflags="-s -w" -o clog
-
+```
 Move to your path (optional)
 
 sudo mv clog /usr/local/bin/
