@@ -4,6 +4,13 @@
 
 **clog** is a high-performance, real-time terminal dashboard designed specifically for Caddy's JSON access logs. It transforms messy, hard-to-read JSON streams into a clean, actionable visual interface.
 
+## 📋 Core Features
+
+- Native JSON Awareness: Built to understand the Caddy log schema natively. No external dependencies required.
+- Live Metrics: The dashboard tracks status code distribution (2xx/3xx/4xx/5xx) so you can spot spikes in errors instantly.
+- Zero-Lag Stream: Optimized Go routines ensure that even under high-traffic loads (10k+ requests/sec), your monitoring tool doesn't become the bottleneck.
+- Human-Centric Design: Focused on the four golden signals: Method, Path
+
 ## 🚀 Installation
 
 ### From Source
