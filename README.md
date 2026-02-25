@@ -19,7 +19,7 @@
   
 ---
 
-## 😜 Features
+## 😀 Features
 
 * **⚡ Zero-Latency Streaming:** Uses non-blocking I/O and optimized Go channels to handle high-traffic environments without dropping frames.
 * **📊 Real-time Analytics:** Instant status code distribution (2xx, 3xx, 4xx, 5xx) visualized in the TUI.
@@ -32,7 +32,7 @@
 
 ---
 
-## Dashboard Mode
+## 🖥️ Dashboard Mode
 
 Activated with the -d or --dashboard flag, this mode transforms clog from a simple log tailer into a full-scale Network Operations Center (NOC) display.
 
