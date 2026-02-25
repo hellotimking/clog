@@ -9,15 +9,17 @@
 **Transforming messy, hard-to-read JSON streams into a clean, actionable visual interface.**
 
 ---
+
 - [Features](#-features)
 - [Dashboard Mode](#-dashboard-mode)
 - [How to Install CLOG](#-how-to-install-clog)
 - [Command Line Interface](#-command-line-interface)
 - [How to Use](#-how-to-use)
 - [License](#-license)
+  
 ---
 
-## Features
+## 😜 Features
 
 * **⚡ Zero-Latency Streaming:** Uses non-blocking I/O and optimized Go channels to handle high-traffic environments without dropping frames.
 * **📊 Real-time Analytics:** Instant status code distribution (2xx, 3xx, 4xx, 5xx) visualized in the TUI.
@@ -118,7 +120,7 @@ clog --host <ip address or host> /path/to/access.log
 ---
 
 ### Finding specific urls
-If you're searching for a specific url, you can define a string to search for: 
+If you're searching for a specific url, you can define a string to search for:
 ```
 clog --find <text to find> /path/to/access.log
 ```
