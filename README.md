@@ -10,33 +10,47 @@
 
 ---
 - [Features](#-features)
-- [Performance](#-performance)
-- [Installation](#-installation)
+- [Dashboard Mode](#-dashboard-mode)
+- [How to Install CLOG](#-how-to-install-clog)
 - [Command Line Interface](#-command-line-interface)
 - [How to Use](#-how-to-use)
 - [License](#-license)
 ---
 
-## ✨ Features
+## Features
 
 * **⚡ Zero-Latency Streaming:** Uses non-blocking I/O and optimized Go channels to handle high-traffic environments without dropping frames.
 * **📊 Real-time Analytics:** Instant status code distribution (2xx, 3xx, 4xx, 5xx) visualized in the TUI.
 * **🔍 Power Filtering:** Regex-based or field-specific filtering to isolate problematic endpoints or specific status codes.
-* **🧠 Schema Aware:** Deep understanding of Caddy's default JSON log structure—no configuration required.
+* **👀 Schema Aware:** Deep understanding of Caddy's default JSON log structure—no configuration required.
 * **🎨 Responsive TUI:** Built with a terminal UI that scales from small side-panes to full-screen NOC displays.
+* **⬇️ Low CPU Overhead:** Log parsing happens in parallel worker pools using Go routines.
+* **🧠 Predictable Memory:** Uses a fixed-size ring buffer for history to prevent memory leaks.
+* **🏎️ Efficiency:** Capable of processing thousands of lines per second with negligible latency.
 
 ---
 
-## 🏎 Performance
+## Dashboard Mode
 
-CLOG is designed to be lightweight. It runs as a single static binary with:
-* **Low CPU Overhead:** Log parsing happens in parallel worker pools using Go routines.
-* **Predictable Memory:** Uses a fixed-size ring buffer for history to prevent memory leaks.
-* **Efficiency:** Capable of processing thousands of lines per second with negligible latency.
+Activated with the -d or --dashboard flag, this mode transforms clog from a simple log tailer into a full-scale Network Operations Center (NOC) display.
+
+**The dashboard provides a high-fidelity, 1-second interval overview of your server's health:**
+* **Real-time Metrics:** Tracks live Requests Per Second (RPS) and cumulative request counts to identify traffic spikes as they happen.
+* **Status Distribution:** A visual breakdown of HTTP status codes (Success vs. Client/Server Errors). This allows you to distinguish between a healthy traffic surge and a coordinated DDoS or application failure at a glance.
+* **System Awareness:** When combined with the -s flag, it embeds a resource monitor showing CPU and Memory utilization, allowing you to correlate log spikes with hardware bottlenecks.
+* **Non-Blocking Engine:** Built on a polling architecture that reads from the tail of the log without locking the file, ensuring zero impact on your web server's performance.
+
+### To activate dashboard mode:
+```
+clog -d -s /var/log/caddy/access.log
+```
+
+### Dashboard Mode Screenshot
+![Finding Urls](assets/clog-dashboard.png)
 
 ---
 
-## 🚀 Installation
+## 🚀 How to Install CLOG
 
 ### From Source
 **Requires Go 1.21 or higher.**
@@ -76,7 +90,7 @@ sudo mv clog /usr/local/bin/
 
 ## 💡 How to Use
 
-### Basic Log Tail
+### Basic log tailing
 Simply point **clog** at your Caddy access log to see a cleaned-up, human-readable stream and it will print the last 10 lines in the log and continue to tail until stopped (CTRL + C):
 ```
 clog /path/to/access.log
@@ -101,38 +115,29 @@ clog --host <ip address or host> /path/to/access.log
 ```
 ![Limit to host](assets/clog-host.png)
 
-### 2. Security Auditing & Threat Detection
+---
 
-Hunt for suspicious activity by searching for common exploit strings or sensitive paths:
+### Finding specific urls
+If you're searching for a specific url, you can define a string to search for: 
+```
+clog --find <text to find> /path/to/access.log
+```
+![Finding Urls](assets/clog-find.png)
 
-clog -f "/.env" /var/log/caddy/access.log
-clog -f "wp-admin" /var/log/caddy/access.log
+---
 
+### Limiting to errors only
+If you'd like to see only errors:
+```
+clog --errors /path/to/access.log
+```
+![Errors Only](assets/clog-errors.png)
 
-3. Debugging Production Crashes
+--- 
 
-Combine the error flag with a high line-history count to see the events leading up to a 5xx spike:
-
-clog -e -l 500 /var/log/caddy/access.log
-
-
-4. High-Signal NOC Dashboard
-
-Enable the interactive dashboard, clear the screen for a fresh start, and hide noisy asset logs (images/scripts) to focus strictly on API/Page performance:
-
-clog -d -c -ha /var/log/caddy/access.log
-
-
-5. Investigating Client-Side Issues
-
-If a specific user is reporting issues, filter by their IP address to see their exact request journey:
-
-clog -h "123.45.67.89" /var/log/caddy/access.log
-
-
-6. Historical Analysis
-
-Review a massive chunk of history while ignoring the standard asset filters:
-
-clog -a -l 2000 /var/log/caddy/access.log
-
+### Hiding assets
+Sometimes you'll want to hide asset-type files to see cleaner results (images, audio, video, JS, css, and more)
+```
+clog --hide-assets /path/to/access.log
+```
+![Hide Assets](assets/clog-hide-assets.png)
