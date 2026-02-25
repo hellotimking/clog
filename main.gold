@@ -1,0 +1,298 @@
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"flag"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
+	"unsafe"
+
+	"github.com/hpcloud/tail"
+)
+
+type CaddyLog struct {
+	Timestamp float64 `json:"ts"`
+	Status    int     `json:"status"`
+	Duration  float64 `json:"duration"`
+	Request   struct {
+		RemoteIP string `json:"remote_ip"`
+		Method   string `json:"method"`
+		Host     string `json:"host"`
+		URI      string `json:"uri"`
+	} `json:"request"`
+}
+
+var (
+	isTerminal bool
+	totalLines int
+	lastSize   int64
+)
+
+func getTermSize() (int, int) {
+	type winsize struct {
+		Row, Col, Xpixel, Ypixel uint16
+	}
+	ws := &winsize{}
+	syscall.Syscall(syscall.SYS_IOCTL, uintptr(syscall.Stdin), uintptr(syscall.TIOCGWINSZ), uintptr(unsafe.Pointer(ws)))
+	return int(ws.Row), int(ws.Col)
+}
+
+func doubleClear() { fmt.Print("\033[H\033[2J\033[3J") }
+
+func colorLabel(label string, active bool) string {
+	if !isTerminal { return label }
+	if active { return "\033[32m" + label + "\033[0m" }
+	return "\033[31m" + label + "\033[0m"
+}
+
+func formatBytes(b int64) string {
+	const unit = 1024
+	if b < unit { return fmt.Sprintf("%d B", b) }
+	div, exp := int64(unit), 0
+	for n := b / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.1f %cB", float64(b)/float64(div), "KMGTPE"[exp])
+}
+
+// Initial count (Buffered)
+func countTotalLines(filePath string) (int, int64) {
+	f, err := os.Open(filePath)
+	if err != nil { return 0, 0 }
+	defer f.Close()
+	info, _ := f.Stat()
+	
+	count := 0
+	buf := make([]byte, 32*1024)
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := f.Read(buf)
+		if c > 0 {
+			count += bytes.Count(buf[:c], lineSep)
+		}
+		if err == io.EOF { break }
+	}
+	return count, info.Size()
+}
+
+// Incremental count (OOM-Safe: Processes the gap in 32KB chunks)
+func updateLineCount(filePath string) {
+	info, err := os.Stat(filePath)
+	if err != nil { return }
+	currentSize := info.Size()
+	
+	if currentSize > lastSize {
+		f, _ := os.Open(filePath)
+		defer f.Close()
+		f.Seek(lastSize, io.SeekStart)
+		
+		buf := make([]byte, 32*1024)
+		bytesToRead := currentSize - lastSize
+		
+		for bytesToRead > 0 {
+			readSize := int64(len(buf))
+			if bytesToRead < readSize {
+				readSize = bytesToRead
+			}
+			
+			c, err := f.Read(buf[:readSize])
+			if c > 0 {
+				totalLines += bytes.Count(buf[:c], []byte{'\n'})
+				bytesToRead -= int64(c)
+			}
+			if err != nil { break }
+		}
+		lastSize = currentSize
+	} else if currentSize < lastSize {
+		totalLines, lastSize = countTotalLines(filePath)
+	}
+}
+
+func getLastLines(filePath string, n int) ([]string, int64) {
+	file, err := os.Open(filePath)
+	if err != nil { return nil, 0 }
+	defer file.Close()
+	info, _ := file.Stat()
+	fileSize := info.Size()
+
+	var lines []string
+	var cursor int64 = 0
+	bufferSize := int64(4096)
+	if fileSize < bufferSize { bufferSize = fileSize }
+
+	for cursor < fileSize {
+		cursor += bufferSize
+		if cursor > fileSize { cursor = fileSize }
+		file.Seek(fileSize-cursor, io.SeekStart)
+		buf := make([]byte, bufferSize)
+		file.Read(buf)
+		chunkLines := strings.Split(string(buf), "\n")
+		if len(lines) == 0 && chunkLines[len(chunkLines)-1] == "" { chunkLines = chunkLines[:len(chunkLines)-1] }
+		lines = append(chunkLines, lines...)
+		if len(lines) > n { return lines[len(lines)-n:], fileSize }
+	}
+	return lines, fileSize
+}
+
+func isAsset(uri string) bool {
+	cleanURI := strings.Split(uri, "?")[0]
+	assets := map[string]bool{".js": true, ".css": true, ".map": true, ".scss": true, ".jpg": true, ".jpeg": true, ".png": true, ".gif": true, ".webp": true, ".avif": true, ".svg": true, ".ico": true, ".cur": true, ".woff": true, ".woff2": true, ".ttf": true, ".otf": true, ".eot": true, ".mp4": true, ".webm": true, ".mov": true, ".ogv": true, ".mp3": true, ".wav": true, ".m4a": true, ".ogg": true, ".flac": true, ".aac": true, ".zip": true, ".gz": true, ".tar": true, ".pdf": true, ".webmanifest": true, ".xml": true, ".robots.txt": true, ".php": true}
+	lastDot := strings.LastIndex(cleanURI, ".")
+	return lastDot != -1 && assets[strings.ToLower(cleanURI[lastDot:])]
+}
+
+func main() {
+	var lCount int
+	var ha, e, all, clear, count bool
+	var f, host string
+	var refresh int
+
+	flag.IntVar(&lCount, "l", 0, "")
+	flag.IntVar(&lCount, "lines", 0, "")
+	flag.BoolVar(&ha, "ha", false, "")
+	flag.BoolVar(&ha, "hide-assets", false, "")
+	flag.BoolVar(&e, "e", false, "")
+	flag.BoolVar(&e, "errors", false, "")
+	flag.StringVar(&f, "f", "", "")
+	flag.StringVar(&f, "find", "", "")
+	flag.StringVar(&host, "h", "", "")
+	flag.StringVar(&host, "host", "", "")
+	flag.BoolVar(&all, "a", false, "")
+	flag.BoolVar(&all, "all", false, "")
+	flag.BoolVar(&clear, "c", false, "")
+	flag.BoolVar(&clear, "clear-screen", false, "")
+	flag.BoolVar(&count, "co", false, "")
+	flag.BoolVar(&count, "count", false, "")
+	flag.IntVar(&refresh, "r", 0, "")
+	flag.IntVar(&refresh, "refresh", 0, "")
+	flag.Parse()
+
+	fileInfo, _ := os.Stdout.Stat()
+	isTerminal = (fileInfo.Mode() & os.ModeCharDevice) != 0
+
+	if flag.NArg() < 1 { os.Exit(1) }
+	filePath := flag.Arg(0)
+
+	totalLines, lastSize = countTotalLines(filePath)
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-sigChan
+		if isTerminal {
+			fmt.Print("\033[?25h")
+			if clear || refresh > 0 { doubleClear() }
+		}
+		os.Exit(0)
+	}()
+
+	if isTerminal {
+		if refresh > 0 { fmt.Print("\033[?25l") }
+		if clear || refresh > 0 { doubleClear() }
+	}
+
+	for {
+		updateLineCount(filePath) 
+		h, w := getTermSize()
+		headerHeight := 6
+		if host != "" || f != "" { headerHeight = 7 }
+
+		currentLCount := lCount
+		if refresh > 0 && currentLCount == 0 {
+			currentLCount = h - headerHeight
+			if currentLCount < 1 { currentLCount = 1 }
+		} else if currentLCount == 0 && !all {
+			currentLCount = 10
+		}
+
+		if isTerminal && refresh > 0 { fmt.Print("\033[H") }
+		processLogs(filePath, currentLCount, ha, e, all, f, host, count, refresh, w)
+		if refresh <= 0 { break }
+		if isTerminal { fmt.Print("\033[J") }
+		time.Sleep(time.Duration(refresh) * time.Second)
+	}
+}
+
+func processLogs(filePath string, lCount int, ha bool, e bool, all bool, f string, host string, count bool, refresh int, width int) {
+	voidLogger := log.New(io.Discard, "", 0)
+	rawLines, _ := getLastLines(filePath, lCount*5)
+
+	if isTerminal || count {
+		fmt.Fprintf(os.Stderr, "%s\033[K\n", strings.Repeat("━", width))
+		fmt.Fprintf(os.Stderr, "\033[1;37mWatching:\033[0m %s\033[K\n", filePath)
+		numLabel := colorLabel(fmt.Sprintf("Lines %d", lCount), lCount > 0)
+		if all { numLabel = colorLabel("All History", true) }
+		fmt.Fprintf(os.Stderr, "\033[1;37mActive Flags:\033[0m %s | %s | %s | %s | %s | %s\033[K\n", numLabel, colorLabel("Host", host != ""), colorLabel("Find", f != ""), colorLabel("Errors", e), colorLabel("Hide Assets", ha), colorLabel("Refresh", refresh > 0))
+		fmt.Fprintf(os.Stderr, "\033[1;37mFile Stats:\033[0m %d lines | %s\033[K\n", totalLines, formatBytes(lastSize))
+		if host != "" || f != "" {
+			details := []string{}
+			if host != "" { details = append(details, "Host: "+host) }
+			if f != "" { details = append(details, "Find: "+f) }
+			fmt.Fprintf(os.Stderr, "\033[1;37mFilters:\033[0m %s\033[K\n", strings.Join(details, " | "))
+		}
+		fmt.Fprintf(os.Stderr, "%s\033[K\n", strings.Repeat("━", width))
+	}
+
+	var finalOutput []string
+	processedCount := 0
+	for i := len(rawLines) - 1; i >= 0; i-- {
+		line := rawLines[i]
+		if line == "" { continue }
+		var l CaddyLog
+		if err := json.Unmarshal([]byte(line), &l); err != nil { continue }
+		if host != "" {
+			h := strings.ToLower(host)
+			if !strings.Contains(strings.ToLower(l.Request.RemoteIP), h) && !strings.Contains(strings.ToLower(l.Request.Host), h) { continue }
+		}
+		if !all && ha && isAsset(l.Request.URI) { continue }
+		if e && l.Status < 400 { continue }
+		if f != "" && !strings.Contains(strings.ToLower(line), strings.ToLower(f)) { continue }
+		tm := time.Unix(int64(l.Timestamp), 0).Format("2006-01-02 | 15:04:05")
+		status := fmt.Sprintf("%d", l.Status)
+		if isTerminal {
+			color := "\u001b[32m"
+			if l.Status >= 400 { color = "\u001b[31m" }
+			status = fmt.Sprintf("%s%d\u001b[0m", color, l.Status)
+		}
+		out := fmt.Sprintf("%s | %-15s | %s | %-6s | %4dms | %s%s", tm, l.Request.RemoteIP, status, l.Request.Method, int(l.Duration*1000), l.Request.Host, l.Request.URI)
+		if refresh > 0 && len(out) > width { out = out[:width-3] + "..." }
+		finalOutput = append([]string{out}, finalOutput...)
+		processedCount++
+		if !all && processedCount >= lCount { break }
+	}
+
+	for _, line := range finalOutput { fmt.Printf("%s\033[K\n", line) }
+
+	if refresh == 0 {
+		config := tail.Config{Follow: true, MustExist: true, Logger: voidLogger, Location: &tail.SeekInfo{Offset: 0, Whence: io.SeekEnd}}
+		t, _ := tail.TailFile(filePath, config)
+		for line := range t.Lines {
+			var l CaddyLog
+			if err := json.Unmarshal([]byte(line.Text), &l); err != nil { continue }
+			if host != "" {
+				h := strings.ToLower(host)
+				if !strings.Contains(strings.ToLower(l.Request.RemoteIP), h) && !strings.Contains(strings.ToLower(l.Request.Host), h) { continue }
+			}
+			if !all && ha && isAsset(l.Request.URI) { continue }
+			if e && l.Status < 400 { continue }
+			if f != "" && !strings.Contains(strings.ToLower(line.Text), strings.ToLower(f)) { continue }
+			tm := time.Unix(int64(l.Timestamp), 0).Format("2006-01-02 | 15:04:05")
+			status := fmt.Sprintf("%d", l.Status)
+			if isTerminal {
+				color := "\u001b[32m"
+				if l.Status >= 400 { color = "\u001b[31m" }
+				status = fmt.Sprintf("%s%d\u001b[0m", color, l.Status)
+			}
+			fmt.Printf("%s | %-15s | %s | %-6s | %4dms | %s%s\033[K\n", tm, l.Request.RemoteIP, status, l.Request.Method, int(l.Duration*1000), l.Request.Host, l.Request.URI)
+		}
+	}
+}
