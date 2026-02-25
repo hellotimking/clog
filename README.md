@@ -10,12 +10,12 @@
 
 ---
 
-- [Features](#-features)
-- [Dashboard Mode](#-dashboard-mode)
-- [How to Install CLOG](#-how-to-install-clog)
-- [Command Line Interface](#-command-line-interface)
-- [How to Use](#-how-to-use)
-- [License](#-license)
+* [Features](#-features)
+* [Dashboard Mode](#-dashboard-mode)
+* [How to Install CLOG](#-how-to-install-clog)
+* [Command Line Interface](#-command-line-interface)
+* [How to Use](#-how-to-use)
+* [License](#-License)
   
 ---
 
