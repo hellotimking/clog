@@ -1,8 +1,14 @@
 # CLOG - High-Visibility Caddy Logs 🪵
-## Stop squinting at JSON. Start monitoring at the speed of Go.
+## Stop squinting at JSON log files. Start monitoring at the speed of Go.
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://github.com/hellotimking/clog)
+[![Platform](https://img.shields.io/badge/platform-linux-lightgrey)](https://github.com/hellotimking/clog)
+[![Caddy](https://img.shields.io/badge/works%20with-Caddy-00ADD8)](https://caddyserver.com)
 [![License](https://img.shields.io/github/license/hellotimking/clog?cacheBust=1)](LICENSE)
+
+[![GitHub Release](https://img.shields.io/github/v/release/hellotimking/clog)](https://github.com/hellotimking/clog/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/hellotimking/clog/total)](https://github.com/hellotimking/clog/releases)
+
 
 **CLOG** is a specialized log processor and visualizer built in Go. It solves user JSON-squinting by transforming Caddy's structured logs into an interactive, human-centric dashboard. Designed for systems administrators and developers who need instant situational awareness without the overhead of heavy logging stacks.
 
