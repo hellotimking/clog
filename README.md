@@ -7,10 +7,11 @@
 ## 🚀 Installation
 
 ### From Source
-Clone the repository
-
+#### Clone the repository
+```
 git clone https://github.com/hellotimking/clog.git
 cd clog
+```
 
 Build the binary
 
