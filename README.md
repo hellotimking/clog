@@ -1,4 +1,4 @@
-# CLOG - High-Visibility Caddy Logs 🪵👀
+# CLOG - High-Visibility Caddy Log Viewer 🪵👀
 ## Stop squinting at JSON log files. Start monitoring at the speed of Go.
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://github.com/hellotimking/clog)
