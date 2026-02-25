@@ -27,6 +27,15 @@
 
 ---
 
+🏎 Performance
+
+CLOG is designed to be lightweight. It runs as a single static binary with:
+* **Low CPU Overhead:** Log parsing happens in parallel worker pools using Go routines.
+* **Predictable Memory:** Uses a fixed-size ring buffer for history to prevent memory leaks.
+* **Efficiency:** Capable of processing thousands of lines per second with negligible latency.
+
+---
+
 ## 🚀 Installation
 
 ### From Source
@@ -63,45 +72,7 @@ sudo mv clog /usr/local/bin/
 | \-c | \--clear-screen | Clear terminal before starting and on exit. |
 | \ | \--help | Show the help menu and usage instructions. |
 
-=========
-# CLOG - High-Visibility Caddy Logs 🪵
 
-## Stop squinting at JSON. Start monitoring at the speed of Go.
-
-**clog** is a high-performance, real-time terminal dashboard designed specifically for Caddy's JSON access logs. It transforms messy, hard-to-read JSON streams into a clean, actionable visual interface.
-
-## 📋 Core Features
-
-- **Native JSON Awareness:** Built to understand the Caddy log schema natively. No external dependencies required.
-- **Live Metrics:** The dashboard tracks status code distribution (2xx/3xx/4xx/5xx) so you can spot spikes in errors instantly.
-- **Zero-Lag Stream:** Optimized Go routines ensure that even under high-traffic loads (10k+ requests/sec), your monitoring tool doesn't become the bottleneck.
-- **Human-Centric Design:** Focused on the four golden signals: Method, Path
-
-## 🚀 Installation
-
-### From Source
-#### Clone the repository
-```
-git clone https://github.com/hellotimking/clog.git
-cd clog
-```
-
-#### Build the binary
-```
-go build -ldflags="-s -w" -o clog
-```
-#### Move to your path (optional)
-```
-sudo mv clog /usr/local/bin/
-```
-
-## 🛠 Usage
-
-### Command Line Switches
-
-
-
-### Examples
 
 **Basic Tail**
 Simply point **clog** at your Caddy access log to see a cleaned-up, human-readable stream:
