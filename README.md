@@ -34,13 +34,15 @@
 
 ## 🖥️ Dashboard Mode
 
-Activated with the -d or --dashboard flag, this mode transforms clog from a simple log tailer into a full-scale Network Operations Center (NOC) display.
+Activated with the --dashboard or -d flag, this mode transforms clog from a simple log tailer into a full-scale Network Operations Center (NOC) display.
 
 **The dashboard provides a high-fidelity, 1-second interval overview of your server's health:**
 * **Real-time Metrics:** Tracks live Requests Per Second (RPS) and cumulative request counts to identify traffic spikes as they happen.
 * **Status Distribution:** A visual breakdown of HTTP status codes (Success vs. Client/Server Errors). This allows you to distinguish between a healthy traffic surge and a coordinated DDoS or application failure at a glance.
 * **System Awareness:** When combined with the -s flag, it embeds a resource monitor showing CPU and Memory utilization, allowing you to correlate log spikes with hardware bottlenecks.
 * **Non-Blocking Engine:** Built on a polling architecture that reads from the tail of the log without locking the file, ensuring zero impact on your web server's performance.
+
+Additionally, to add the status bar to the bottom to see uptime, memory use, and CPU use use the --status or -s flag
 
 ### To activate dashboard mode:
 ```
@@ -143,3 +145,16 @@ Sometimes you'll want to hide asset-type files to see cleaner results (images, a
 clog --hide-assets /path/to/access.log
 ```
 ![Hide Assets](assets/clog-hide-assets.png)
+
+---
+
+### Clear Screen
+If you'd like to clear the screen before and after running CLOG:
+```
+clog --clear-screen /path/to/access.log
+```
+
+---
+
+## License
+This project is licensed under the MIT License - see the ![MIT License](LICENSE) file for details.
