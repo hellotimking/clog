@@ -13,8 +13,7 @@
 - [Performance](#-performance)
 - [Installation](#-installation)
 - [Command Line Interface](#-command-line-interface)
-- [Advanced Usage](#-advanced-usage)
-- [Performance](#-performance)
+- [How to Use](#-how-to-use)
 - [License](#-license)
 ---
 
@@ -73,7 +72,67 @@ sudo mv clog /usr/local/bin/
 | \-c | \--clear-screen | Clear terminal before starting and on exit. |
 | \ | \--help | Show the help menu and usage instructions. |
 
+----
+
+## 💡 How to Use
+
+### Basic Log Tail
+Simply point **clog** at your Caddy access log to see a cleaned-up, human-readable stream and it will print the last 10 lines in the log and continue to tail until stopped (CTRL + C):
+```
+clog /path/to/access.log
+```
+![Basic Tail](assets/clog-default-use.png)
+
+---
+
+### Specify number of lines
+If you'd like to specify the number of lines to begin with:
+```
+clog --lines 20 /path/to/access.log
+```
+![Tail with specified lines](assets/clog-lines.png)
+
+---
+
+### Limit to host
+If you want to limit the tail to a specific host:
+```
+clog --host <ip address or host> /path/to/access.log
+```
+![Limit to host](assets/clog-host.png)
+
+### 2. Security Auditing & Threat Detection
+
+Hunt for suspicious activity by searching for common exploit strings or sensitive paths:
+
+clog -f "/.env" /var/log/caddy/access.log
+clog -f "wp-admin" /var/log/caddy/access.log
 
 
-**Basic Tail**
-Simply point **clog** at your Caddy access log to see a cleaned-up, human-readable stream:
+3. Debugging Production Crashes
+
+Combine the error flag with a high line-history count to see the events leading up to a 5xx spike:
+
+clog -e -l 500 /var/log/caddy/access.log
+
+
+4. High-Signal NOC Dashboard
+
+Enable the interactive dashboard, clear the screen for a fresh start, and hide noisy asset logs (images/scripts) to focus strictly on API/Page performance:
+
+clog -d -c -ha /var/log/caddy/access.log
+
+
+5. Investigating Client-Side Issues
+
+If a specific user is reporting issues, filter by their IP address to see their exact request journey:
+
+clog -h "123.45.67.89" /var/log/caddy/access.log
+
+
+6. Historical Analysis
+
+Review a massive chunk of history while ignoring the standard asset filters:
+
+clog -a -l 2000 /var/log/caddy/access.log
+
