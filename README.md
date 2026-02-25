@@ -82,7 +82,7 @@ sudo mv clog /usr/local/bin/
 | \-s | \--status | Show system resource bar at the bottom of the terminal. |
 | \-d | \--dashboard | Enable 1-second dashboard mode for real-time metrics. |
 | \-c | \--clear-screen | Clear terminal before starting and on exit. |
-| \ | \--help | Show the help menu and usage instructions. |
+|  | \--help | Show the help menu and usage instructions. |
 
 ----
 
