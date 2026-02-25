@@ -47,6 +47,22 @@ go build -ldflags="-s -w" -o clog
 ```
 sudo mv clog /usr/local/bin/
 ```
+---
+
+## **⚙️ Command Line Interface**
+
+| Switch | Long Flag | Description |
+| :---- | :---- | :---- |
+| \-l | \--lines | Number of previous lines to show from the log file. |
+| \-h | \--host | Only show logs for a specific domain or IP address. |
+| \-f | \--find | Only show lines containing a specific string. |
+| \-e | \--errors | Only show requests with status code \>= 400\. |
+| \-ha | \--hide-assets | Hides common asset types (.js, .css, images, etc). |
+| \-a | \--all | Show entire history and ignore asset filters. |
+| \-s | \--status | Show system resource bar at the bottom of the terminal. |
+| \-d | \--dashboard | Enable 1-second dashboard mode for real-time metrics. |
+| \-c | \--clear-screen | Clear terminal before starting and on exit. |
+| \ | \--help | Show the help menu and usage instructions. |
 
 =========
 # CLOG - High-Visibility Caddy Logs 🪵
@@ -84,20 +100,7 @@ sudo mv clog /usr/local/bin/
 
 ### Command Line Switches
 
-## **⚙️ Command Line Interface**
 
-| Switch | Long Flag | Description |
-| :---- | :---- | :---- |
-| \-l | \--lines | Number of previous lines to show from the log file. |
-| \-h | \--host | Only show logs for a specific domain or IP address. |
-| \-f | \--find | Only show lines containing a specific string. |
-| \-e | \--errors | Only show requests with status code \>= 400\. |
-| \-ha | \--hide-assets | Hides common asset types (.js, .css, images, etc). |
-| \-a | \--all | Show entire history and ignore asset filters. |
-| \-s | \--status | Show system resource bar at the bottom of the terminal. |
-| \-d | \--dashboard | Enable 1-second dashboard mode for real-time metrics. |
-| \-c | \--clear-screen | Clear terminal before starting and on exit. |
-| \- | \--help | Show the help menu and usage instructions. |
 
 ### Examples
 
