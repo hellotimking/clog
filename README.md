@@ -11,8 +11,8 @@
 ---
 
 * [Features](#-features)
-* [Dashboard Mode](#-dashboard-mode)
 * [How to Install CLOG](#-how-to-install-clog)
+* [Dashboard Mode](#-dashboard-mode)
 * [Command Line Interface](#-command-line-interface)
 * [How to Use](#-how-to-use)
 * [License](#-License)
@@ -29,28 +29,6 @@
 * **⬇️ Low CPU Overhead:** Log parsing happens in parallel worker pools using Go routines.
 * **🧠 Predictable Memory:** Uses a fixed-size ring buffer for history to prevent memory leaks.
 * **🏎️ Efficiency:** Capable of processing thousands of lines per second with negligible latency.
-
----
-
-## 🖥️ Dashboard Mode
-
-Activated with the --dashboard or -d flag, this mode transforms clog from a simple log tailer into a full-scale Network Operations Center (NOC) display.
-
-**The dashboard provides a high-fidelity, 1-second interval overview of your server's health:**
-* **Real-time Metrics:** Tracks live Requests Per Second (RPS) and cumulative request counts to identify traffic spikes as they happen.
-* **Status Distribution:** A visual breakdown of HTTP status codes (Success vs. Client/Server Errors). This allows you to distinguish between a healthy traffic surge and a coordinated DDoS or application failure at a glance.
-* **System Awareness:** When combined with the -s flag, it embeds a resource monitor showing CPU and Memory utilization, allowing you to correlate log spikes with hardware bottlenecks.
-* **Non-Blocking Engine:** Built on a polling architecture that reads from the tail of the log without locking the file, ensuring zero impact on your web server's performance.
-
-Additionally, to add the status bar to the bottom to see uptime, memory use, and CPU use use the --status or -s flag
-
-### To activate dashboard mode:
-```
-clog -d -s /var/log/caddy/access.log
-```
-
-### Dashboard Mode Screenshot
-![Finding Urls](assets/clog-dashboard.png)
 
 ---
 
@@ -100,6 +78,28 @@ sudo mv clog /usr/local/bin/
 | \ | \--help | Show the help menu and usage instructions. |
 
 ----
+
+## 🖥️ Dashboard Mode
+
+Activated with the --dashboard or -d flag, this mode transforms clog from a simple log tailer into a full-scale Network Operations Center (NOC) display.
+
+**The dashboard provides a high-fidelity, 1-second interval overview of your server's health:**
+* **Real-time Metrics:** Tracks live Requests Per Second (RPS) and cumulative request counts to identify traffic spikes as they happen.
+* **Status Distribution:** A visual breakdown of HTTP status codes (Success vs. Client/Server Errors). This allows you to distinguish between a healthy traffic surge and a coordinated DDoS or application failure at a glance.
+* **System Awareness:** When combined with the -s flag, it embeds a resource monitor showing CPU and Memory utilization, allowing you to correlate log spikes with hardware bottlenecks.
+* **Non-Blocking Engine:** Built on a polling architecture that reads from the tail of the log without locking the file, ensuring zero impact on your web server's performance.
+
+Additionally, to add the status bar to the bottom to see uptime, memory use, and CPU use use the --status or -s flag
+
+### To activate dashboard mode:
+```
+clog -d -s /var/log/caddy/access.log
+```
+
+### Dashboard Mode Screenshot
+![Finding Urls](assets/clog-dashboard.png)
+
+---
 
 ## 💡 How to Use
 
