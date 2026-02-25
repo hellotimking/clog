@@ -56,7 +56,16 @@ clog -d -s /var/log/caddy/access.log
 
 ## 🚀 How to Install CLOG
 
-### From Source
+### Install.sh
+The simplest way to install CLOG on your own machine is to use the provided one line install script:
+```
+curl -sL https://raw.githubusercontent.com/hellotimking/clog/main/install.sh | bash
+```
+> [!NOTE]
+> As with all things on the web, you should read the above script to ensure it is safe for you to run.
+> (I mean, it is... but it's good to read through what it's going to do)
+
+### Building From Source
 **Requires Go 1.21 or higher.**
 
 #### Clone the repository
