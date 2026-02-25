@@ -28,7 +28,7 @@
 
 ---
 
-##🏎 Performance
+## 🏎 Performance
 
 CLOG is designed to be lightweight. It runs as a single static binary with:
 * **Low CPU Overhead:** Log parsing happens in parallel worker pools using Go routines.
