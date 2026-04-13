@@ -51,7 +51,7 @@ curl -sL https://raw.githubusercontent.com/hellotimking/clog/main/install.sh | b
 > (I mean, it is... but it's good to read through what it's going to do)
 
 ### Building From Source
-**Requires Go 1.21 or higher.**
+**Requires Go 1.24 or higher.**
 
 #### Clone the repository
 ```bash
