@@ -1,0 +1,35 @@
+name: CI (Tests)
+run-name: ${{ github.workflow }} - ${{ github.ref }} - by ${{ github.actor }}
+
+# events that trigger this workflow
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'build/**'
+      - 'assets/**'
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - '**.md'
+      - 'build/**'
+      - 'assets/**'
+  workflow_dispatch:
+
+jobs:
+
+  build: 
+    name: Build App
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read # access to check out code and install dependencies
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - uses: actions/setup-go@v6
+      with:
+        go-version: '1.24' 
+
+    - run: go run main.go --help
