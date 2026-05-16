@@ -1,6 +1,11 @@
 # CLOG - High-Visibility Caddy Log Viewer 🪵👀
 ## Stop squinting at JSON log files. Start monitoring at the speed of Go.
 
+> [!WARNING]
+> 🚨 SECURITY ALERT
+> Users have identified there are fake clone repos which are redistributing CLOG with malware inclusions.
+> Please ensure you ONLY download CLOG from this repo. If in doubt and cannot verify the origin of your CLOG instalation, delete CLOG from your system immediately and perform virus/malware scanning on your system. 
+
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://github.com/hellotimking/clog)
 [![Platform](https://img.shields.io/badge/platform-linux-lightgrey)](https://github.com/hellotimking/clog)
 [![Caddy](https://img.shields.io/badge/works%20with-Caddy-00ADD8)](https://caddyserver.com)
